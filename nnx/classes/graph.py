@@ -18,7 +18,7 @@ modifying the spec and extending the base class with the new spec.
 '''
 base_graph_spec = {
     '_E': int64,
-    '_node': ListType(ListType(int64))
+    'node_': ListType(ListType(int64))
 }
 @numba.jitclass(base_graph_spec)
 class BaseGraph(object):
@@ -35,60 +35,64 @@ class BaseGraph(object):
         # nodes as well without invalidating the position of all the other
         # nodes.
         adj.append(l)
-        self._node = adj
+        self.node_ = adj
 
     # TODO: add additional non-fundamental properties such as "name"
-
-    def __str__(self):
-        s = ''
-        for v in range(len(self)):
-            for u in self._node[v]:
-                s = s + str(v) + '->' + str(u) + '\n'
-        return s
 
     def __iter__(self):
         '''
         Iterates over graph nodes. Every element is list of neighbours
         of the node.
         '''
-        return iter(self._node)
+        return iter(self.node_)
 
-    def __contains__(self,n):
-        '''
-        Return True if n is a node. 
-        FIXME: like everything else, this function assumes no node is 
-        ever deleted.
-        On the other hand, with that assumption, we can just simply 
-        check the length of the nodes list which is very fast.
-        '''
-        return len(self._node) > n
+    # __contains__ is commented as right now numba does not support it
+    # def __contains__(self,n):
+    #     '''
+    #     Return True if n is a node. 
+    #     FIXME: like everything else, this function assumes no node is 
+    #     ever deleted.
+    #     On the other hand, with that assumption, we can just simply 
+    #     check the length of the nodes list which is very fast.
+    #     '''
+    #     return len(self.node_) > n
+    def contains(self, n):
+        return len(self.node_) > n
 
-    def __len__(self):
+    # __len is commented as right now numba does not support it
+    # def __len__(self):
+    #     '''
+    #     Returns number of nodes in graph. 
+    #     FIXME: assumes no deletion, empty graph will give wrong result
+    #     '''
+    #     return len(self.node_)
+
+    def len(self):
         '''
-        Returns number of nodes in graph. 
-        FIXME: assumes no deletion, empty graph will give wrong result
+        Temporary __len__ method while the operator is not supported
+        in numba
         '''
-        return len(self._node)
+        return len(self.node_)
 
     def __getitem__(self, n):
-        return self._node[n]
+        return self.node_[n]
 
     def add_edge(self, u, v):
         '''
         Adds edge to a graph. If nodes do not exist, adds them.
         TODO: right now edges have no attributes
         '''
-        while len(self) <= max(u, v):
-            self._node.append(numba.typed.List.empy_list(0))
+        while len(self.node_) <= max(u, v):
+            self.node_.append(numba.typed.List.empty_list(0))
         # TODO: should check if v is already in node[u] or allow for
         # parallel edges?
-        self._node[u].append(v)
-        self._node[v].append(u)
+        self.node_[u].append(v)
+        self.node_[v].append(u)
         self._E += 1
 
     def remove_edge(self, u, v):
-        self._node[u].remove(v)
-        self._node[v].remove(u)
+        self.node_[u].remove(v)
+        self.node_[v].remove(u)
 
     def add_edges_from(self, ebunch_to_add):
         '''
@@ -100,11 +104,11 @@ class BaseGraph(object):
 
     def copy(self):
         copy_g = BaseGraph()
-        while len(copy_g) < len(self):
-            copy_g._node.append(numba.typed.List.empty_list(0))
-        for v in range(len(self)):
-            for w in self._node[v]:
-                copy_g._node[v].append(w)
+        while len(copy_g) < len(self.node_):
+            copy_g.node_.append(numba.typed.List.empty_list(0))
+        for v in range(len(self.node_)):
+            for w in self.node_[v]:
+                copy_g.node_[v].append(w)
         copy_g.E = self.E
         return copy_g
 
