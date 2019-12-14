@@ -5,4 +5,4 @@ if sys.version_info[:2] < (3, 6):
 del sys
 
 import nnx.classes
-from nnx.classes import *
+from nnx.classes.graph import *
