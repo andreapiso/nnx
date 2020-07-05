@@ -6,17 +6,17 @@ import nnx.classes.types as nnx_types
 
 simple_g_spec = {
     'ne': int64,
-    'fadjlist': ListType(Set(int64))
+    'fadjlist': ListType(ListType(int64))
 }
 @jitclass(simple_g_spec)
-class _SimpleGraphSet(object):
+class _SimpleGraphList(object):
     # base constructor, providing ne and fadjlist
     def __init__(self, ne, fadjlist):
         self.ne = ne
         self.fadjlist = fadjlist
     
     @property
-    def badjlist(self):
+    def badj(self):
         return self.fadjlist
     
     @property
@@ -48,16 +48,16 @@ class _SimpleGraphSet(object):
             self.add_vertices((m - nvv) + 1)
         if d in self.fadjlist[s]:
             return False
-        self.fadjlist[s].add(d)
+        self.fadjlist[s].append(d)
         if d != s:
-            self.fadjlist[d].add(s)
+            self.fadjlist[d].append(s)
         self.ne += 1
         return True
 
     def add_edges_from(self, edge_iter, add_nodes=False):
         for e in edge_iter:
             self.add_edge(e[0], e[1], add_nodes)
-
+    
     def rem_edge(self, s, d):
         if max(s, d) >= self.nv:
             return False
@@ -70,12 +70,12 @@ class _SimpleGraphSet(object):
 
     def add_vertex(self):
         #check for overflow?
-        self.fadjlist.append(set(numba.typed.List.empty_list(0)))
+        self.fadjlist.append(numba.typed.List.empty_list(0))
         
     def add_vertices(self, n):
         for _ in range(n):
             self.add_vertex()
-    
+
     def has_edge(self, s, d):
         if max(s, d) >= self.nv:
             return False #edge out of bounds
@@ -89,7 +89,7 @@ class _SimpleGraphSet(object):
             return False
         else:
             return True
-
+    
     def rem_vertex(self, v):
         n = self.nv - 1
         if v > n:
@@ -119,22 +119,22 @@ class _SimpleGraphSet(object):
         return False
 
 @numba.njit
-def sgs_with_vertices(constructor=0):
+def sg_with_vertices(constructor=0):
     # Create SimpleGraph with n vertices and 0 edges
     fadjlist=numba.typed.List()
     for _ in range(constructor):
-        fadjlist.append(set(numba.typed.List.empty_list(0)))
-    return _SimpleGraphSet(0, fadjlist)
+        fadjlist.append(numba.typed.List.empty_list(0))
+    return _SimpleGraphList(0, fadjlist)
 
 @numba.njit
 def _from_grapharray_constructor_tuple(constructor):
-    fadjlist = numba.typed.List([set(x) for x in constructor[1]])
-    return _SimpleGraphSet(constructor[0], fadjlist)
+    fadjlist = numba.typed.List([numba.typed.List(x) for x in constructor[1]])
+    return _SimpleGraphList(constructor[0], fadjlist)
 
 @numba.generated_jit(nopython=True)
-def SimpleGraphSet(constructor=0):
+def SimpleGraphList(constructor=0):
     if isinstance(constructor, numba.types.Integer) or isinstance(constructor, numba.types.Omitted):
-        return sgs_with_vertices
+        return sg_with_vertices
     elif constructor == nnx_types.simplegrapharray_const_type:
         return _from_grapharray_constructor_tuple
     else:
