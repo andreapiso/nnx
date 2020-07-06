@@ -44,6 +44,12 @@ class _SimpleGraphArray(object):
     def outneighbors(self, v):
         return self.neighbors(v)
 
+    def indegree(self, v):
+        return len(self.inneighbors(v))
+    
+    def outdegree(self, v):
+        return len(self.outneighbors(v))
+
     def add_edge(self, s, d, add_nodes=False):
         nvv = self.nv
         m = max(s, d)
