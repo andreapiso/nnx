@@ -16,7 +16,7 @@ class _SimpleGraphSet(object):
         self.fadjlist = fadjlist
     
     @property
-    def badjlist(self):
+    def badj(self):
         return self.fadjlist
     
     @property
@@ -70,7 +70,8 @@ class _SimpleGraphSet(object):
         if d not in self.fadjlist[s]:
             return False
         self.fadjlist[s].remove(d)
-        self.fadjlist[d].remove(s)
+        if s != d:
+            self.fadjlist[d].remove(s)
         self.ne -= 1
         return True
 
@@ -123,6 +124,22 @@ class _SimpleGraphSet(object):
 
     def is_directed(self):
         return False
+    
+    def has_self_loops(self):
+        for v in self.vertices:
+            if v in self.neighbors(v):
+                return True
+        return False
+
+    def self_loop_edges(self):
+        self_loops = []
+        for v in self.vertices:
+            if v in self.neighbors(v):
+                self_loops.append((v, v))
+        return self_loops
+
+    def number_of_self_loops(self):
+        return len(self.self_loop_edges())
 
 @numba.njit
 def sgs_with_vertices(constructor=0):
