@@ -33,6 +33,14 @@ class _SimpleGraphArray(object):
         for i in range(self.nv):
             #keep this as generator for now
             yield(i)
+
+    @property
+    def edges(self):
+        for s in range(self.nv):
+            for d in self.neighbors(s):
+                if d < s:
+                    continue
+                yield (s, d)
     
     def neighbors(self, v):
         return self.fadjlist[v]
@@ -147,6 +155,9 @@ class _SimpleGraphArray(object):
         return True
 
     def is_directed(self):
+        return False
+
+    def is_multigraph(self):
         return False
     
     def has_self_loops(self):
