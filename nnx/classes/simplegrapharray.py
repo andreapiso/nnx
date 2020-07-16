@@ -49,6 +49,9 @@ class _SimpleGraphArray(object):
     
     def outdegree(self, v):
         return len(self.outneighbors(v))
+    
+    def degree(self, v):
+        return len(self.neighbors(v))
 
     def add_edge(self, s, d, add_nodes=False):
         nvv = self.nv
@@ -106,10 +109,11 @@ class _SimpleGraphArray(object):
     def has_edge(self, s, d):
         if max(s, d) >= self.nv:
             return False #edge out of bounds
-        if d in self.fadjlist[s]:
-            return True
-        else:
-            return False
+        adj = self.fadjlist[s]
+        for i in range(len(adj)):
+            if adj[i] == d:
+                return True
+        return False
 
     def has_vertex(self, v):
         if v >= self.nv:
@@ -166,6 +170,10 @@ class _SimpleGraphArray(object):
 
     def number_of_self_loops(self):
         return len(self.self_loop_edges())
+
+    def _get_generator_function(self):
+        return SimpleGraphArray
+
 
 @numba.njit
 def sg_with_vertices(constructor=0):
