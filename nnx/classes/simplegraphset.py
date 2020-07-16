@@ -44,6 +44,9 @@ class _SimpleGraphSet(object):
     
     def outdegree(self, v):
         return len(self.outneighbors(v))
+    
+    def degree(self, v):
+        return len(self.neighbors(v))
 
     def add_edge(self, s, d, add_nodes=False):
         nvv = self.nv
@@ -140,6 +143,9 @@ class _SimpleGraphSet(object):
 
     def number_of_self_loops(self):
         return len(self.self_loop_edges())
+
+    def _get_generator_function(self):
+        return SimpleGraphSet
 
 @numba.njit
 def sgs_with_vertices(constructor=0):
