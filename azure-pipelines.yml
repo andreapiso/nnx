@@ -21,18 +21,22 @@ steps:
   - bash: echo "##vso[task.prependpath]$CONDA/bin"
     displayName: Add conda to PATH
 
-  - bash: conda create --yes --quiet --name myEnvironment
+  - bash: conda create --yes --quiet --name nnx_env
     displayName: Create Anaconda environment
 
   - bash: |
-      source activate myEnvironment
-      conda install --yes --quiet --name myEnvironment python=$PYTHON_VERSION numpy numba
+      source activate nnx_env
+      conda install --yes --quiet --name nnx_env python=$PYTHON_VERSION numpy numba
     displayName: Install Anaconda packages
   - bash: |
-      source activate myEnvironment
+      source activate nnx_env
       pip install pytest pytest-azurepipelines coverage
       pytest
-    displayName: pytest
+    displayName: Execute tests.
+  - bash: |
+      source activate nnx_env
+      pytest --cov=nnx --cov-report=xml testing/
+    displayName: 'Perform code coverage check'
   - script: |
       bash <(curl -s https://codecov.io/bash)
     displayName: 'Upload to codecov.io'
