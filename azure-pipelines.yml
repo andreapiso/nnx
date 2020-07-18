@@ -30,7 +30,7 @@ steps:
     displayName: Install Anaconda packages
   - bash: |
       source activate nnx_env
-      pip install pytest pytest-azurepipelines coverage
+      pip install pytest pytest-azurepipelines coverage pytest-cov
       pytest
     displayName: Execute tests.
   - bash: |
