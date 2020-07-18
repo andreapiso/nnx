@@ -30,7 +30,7 @@ steps:
     displayName: Install Anaconda packages
   - bash: |
       source activate myEnvironment
-      pip install pytest pytest-azurepipelines
+      pip install pytest pytest-azurepipelines coverage
       pytest
     displayName: pytest
   - script: |
