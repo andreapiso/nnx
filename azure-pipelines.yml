@@ -26,7 +26,7 @@ steps:
 
   - bash: |
       source activate myEnvironment
-      conda install --yes --quiet --name myEnvironment python=$PYTHON_VERSION numpy
+      conda install --yes --quiet --name myEnvironment python=$PYTHON_VERSION numpy numba
     displayName: Install Anaconda packages
   - bash: |
       source activate myEnvironment
