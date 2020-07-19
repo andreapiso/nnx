@@ -6,7 +6,7 @@ nnx is a library that leverages the numba compiler (https://numba.pydata.org/) t
 
 The main strength of nnx compared to libraries that leverage C/Cython to achieve high performance, is that using nnx, custom user code can be sped up as well, as the library makes the numba compiler fully aware of the underlying graph objects. 
 
-### Example Usage - Compute pagerank in Python
+### Example Usage - Compute pagerank
 
 ```python
 import nnx
