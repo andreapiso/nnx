@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# VS Code stuff
+*.vscode/
+
+# Mac OS
+*.DS_store
+
 # Distribution / packaging
 .Python
 build/
@@ -76,6 +82,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+notebooks/
 
 # IPython
 profile_default/
